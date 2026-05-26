@@ -1,3 +1,11 @@
+
+
+### Python modüllerini test ederken arka planda oluşan 
+### derlenmiş önbellek dosyalarının (pyc) repoyu kirletmemesi ve 
+### projede dosya kalabalığı yapmaması için bu dosyaları Git takibinden çıkardım.
+
 __pycache__/
 *.pyc
 
+
+### "git rm -r --cached . " bterminale bu kodu yazarak bu dosyaları hafızadan sildim.Bilgisayarımda hala bu dosyalar var. Sadece aktif olarak izlemicem.
