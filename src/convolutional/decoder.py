@@ -5,25 +5,25 @@ import numpy as np
 def get_trellis():
     """
     ========================================================================================================
-    | m0 | m1 | m2 | x1 | x2 | Current State (m0,m1) | Next State (m1,m2) |
+    | m0 | m1 | m2 | x1 | x2 | Current State (m1,m0) | Next State (m2,m1) |
     --------------------------------------------------------------------------------------------------------
     | 0  | 0  | 0  | 0  | 0  |         00 (a)        |        00 (a)      |
-    | 0  | 0  | 1  | 1  | 1  |         00 (a)        |        01 (b)      |
+    | 0  | 0  | 1  | 1  | 1  |         00 (a)        |        10 (b)      |
     --------------------------------------------------------------------------------------------------------
-    | 0  | 1  | 0  | 1  | 0  |         01 (b)        |        10 (c)      |
-    | 0  | 1  | 1  | 0  | 1  |         01 (b)        |        11 (d)      |
+    | 0  | 1  | 0  | 1  | 0  |         10 (b)        |        01 (c)      |
+    | 0  | 1  | 1  | 0  | 1  |         10 (b)        |        11 (d)      |
     --------------------------------------------------------------------------------------------------------
-    | 1  | 0  | 0  | 1  | 1  |         10 (c)        |        00 (a)      |
-    | 1  | 0  | 1  | 0  | 0  |         10 (c)        |        01 (b)      |
+    | 1  | 0  | 0  | 1  | 1  |         01 (c)        |        00 (a)      |
+    | 1  | 0  | 1  | 0  | 0  |         01 (c)        |        10 (b)      |
     --------------------------------------------------------------------------------------------------------
-    | 1  | 1  | 0  | 0  | 1  |         11 (d)        |        10 (c)      |
+    | 1  | 1  | 0  | 0  | 1  |         11 (d)        |        01 (c)      |
     | 1  | 1  | 1  | 1  | 0  |         11 (d)        |        11 (d)      |
     ========================================================================================================
 
     1. AŞAMA: Olasılık Haritasını (Trellis) Çıkarma
-    - Current State = (m0, m1)
+    - Current State = (m1, m0)
     - Input = m2
-    - Next State = (m1, m2)
+    - Next State = (m2, m1)
     - x1 = m0 ^ m1 ^ m2
     - x2 = m0 ^ m2
     """
@@ -36,14 +36,12 @@ def get_trellis():
     ### 00, 01, 10, 11
     for state in range(4):
 
-        ### Her state için ayrı bir alan açıyoruz
+        ### Her state için ayrı bir area açıyoruz
         trellis[state] = {}
 
-      # State değerini iki bite ayırıyoruz. 
-        # Örnek: state = 2 -> binary 10
-        # m0 = 1, m1 = 0
-        m0 = (state >> 1) & 1  # state'i 1 bit sağa kaydırarak (maskeleyerek) m0 bitini elde ediyoruz.
-        m1 = state & 1         # state'in son bitini alarak m1 bitini elde ediyoruz.
+        # DÜZELTME: Encoder'daki shift register kaydırma yönüne göre bit maskelemesi senkronize edildi.
+        m1 = (state >> 1) & 1  
+        m0 = state & 1         
 
         # Sisteme gelebilecek yeni input biti:
         # m2 = 0 veya 1 olabilir
@@ -56,13 +54,10 @@ def get_trellis():
             x2 = m0 ^ m2
 
             # NEXT STATE Hesaplamasi
+            # DÜZELTME: Yeni state kaydırma yönü (m2, m1) formatına göre düzenlendi.
+            next_state = (m2 << 1) | m1
 
-            # Yeni state = (m1,m2)
-            # m1 sola kaydırılır, m2 en sağa eklenir
-            next_state = (m1 << 1) | m2
-
-            ### TRELLIS Tablosunba kaydetme işlemi
-
+            ### TRELLIS Tablosuna kaydetme işlemi
             trellis[state][m2] = {
 
                 # Geçilecek yeni state
@@ -200,7 +195,7 @@ def viterbi_decode(received_bits):
     # Hafızayı sondan başa doğru oku
     for step in reversed(memory):
 
-        # Önceki state ve input biti
+        # Önceki state and input biti
         prev_state, m2 = step[current_state]
 
         # Input bitini kaydet
