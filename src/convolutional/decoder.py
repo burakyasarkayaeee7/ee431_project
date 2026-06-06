@@ -252,4 +252,5 @@ if __name__ == "__main__":
     print("Kurtarılan Mesaj:  ", kurtarilan[:len(mesaj)])
     print("Doğru mu:          ", np.array_equal(mesaj, kurtarilan[:len(mesaj)]))
 
+    ###
     ### parametreleri hocanın verdiği parametrelerle değiştirdim.
