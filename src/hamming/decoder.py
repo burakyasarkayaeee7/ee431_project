@@ -3,14 +3,14 @@ import numpy as np
 def hamming_decode(received_block, H_matrix):
     ### 1. Parity-Check (H) matrisinin transpozunu alıyoruz.
     ### Proje yönergesinde "Standard libraries for arrays" kullanımı serbest olduğu için,
-    ### transpoz işlemini iç içe döngülerle sıfırdan yazmak yerine NumPy kütüphanbenin .T özelliğini kullanıyoruz.
+    ### transpoz işlemini iç içe döngülerle sıfırdan yazmak yerine NumPy kütüphanesinin .T özelliğini kullanıyoruz.
     H_T = H_matrix.T
     
     ### 2. Sendrom Hesaplama: Gelen mesajı H'nin transpozu ile çarpıp Modulo 2 alıyoruz.
     ### Formül: S = r * H^T
     syndrome = np.dot(received_block, H_T) % 2
     
-    ### 3. Sendrom kontrolü: Eğer sendrom [0, 0, 0] ise kanalda hata olmamıştır.
+    ### 3. Sendrom kontrolü: Eğer sendrom [0, 0, 0, 0] ise kanalda hata olmamıştır.
     if not np.any(syndrome):
         return received_block
         
@@ -31,25 +31,30 @@ def hamming_decode(received_block, H_matrix):
 
 ### --- TEST KISMI ---
 if __name__ == "__main__":
-    ### Test için uydurma bir H (Parity-Check) matrisi
+    ### verify_matrices.py'deki H matrisimiz (4 x 15)
     test_H = np.array([
-        [1, 0, 1, 1, 1, 0, 0],
-        [1, 1, 1, 0, 0, 1, 0],
-        [0, 1, 1, 1, 0, 0, 1]
+        [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0],
+        [1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1]
     ])
-    
-    ### Encoder testinde orijinal mesaj [1 0 1 1] iken, şifrelenmiş hali [1 0 0 1 0 1 1] çıkmıştı.
-    ### Diyelim ki kanaldan geçerken 2. bit (indeks 1) gürültüden etkilendi ve 0 yerine 1 oldu:
-    bozuk_mesaj = np.array([1, 1, 0, 1, 0, 1, 1])
-    
+
+    ### Encoder testinde orijinal mesaj [1 0 1 1 0 0 1 0 1 1 0] iken
+    ### şifrelenmiş hali [1 0 1 1 0 0 1 0 1 1 0 1 0 0 1] çıkmıştı.
+    ### Diyelim ki kanaldan geçerken 3. bit (indeks 2) gürültüden etkilendi ve 1 yerine 0 oldu:
+    bozuk_mesaj = np.array([1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1])
+
     ### Dekoderi çalıştırıp tedaviyi uyguluyoruz
     duzeltilmis_mesaj = hamming_decode(bozuk_mesaj, test_H)
-    
+
     print("Kanaldan Gelen Bozuk Mesaj: ", bozuk_mesaj)
     print("Dekoderin Düzelttiği Mesaj: ", duzeltilmis_mesaj)
-    
-    ### --- MATEMATİKSEL SAĞLAMASI ---
-    ### Bozuk Mesaj: [1, 1, 0, 1, 0, 1, 1]
-    ### H Transpoz ile çarpıldığında Sendrom = [1, 1, 1] çıkar.
-    ### H matrisine bakarsak, [1, 1, 1] sütunu 2. sütundur (indeks 1).
-    ### Demek ki 2. bit hatalı! Dekoder bu biti bulur ve 1'i tekrar 0 yapar.
+
+    ### --- MATEMATİKSEL SAĞLAMA ---
+    ### Bozuk Mesaj: [1 0 0 1 0 0 1 0 1 1 0 1 0 0 1]
+    ### H Transpoz ile çarpıldığında Sendrom = [1 1 0 0] çıkar.
+    ### H matrisine bakarsak, [1 1 0 0] sütunu 3. sütundur (indeks 2).
+    ### Demek ki 3. bit hatalı! Dekoder bu biti bulur ve 0'ı tekrar 1 yapar.
+
+
+    ### parametreleri hocanın verdiği parametrelerle değiştirdim.
