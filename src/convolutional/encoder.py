@@ -73,4 +73,7 @@ if __name__ == "__main__":
     print("Şifreli Çıkış:", sifreli_cikti)
     print("Output bit sayısı:", len(sifreli_cikti))
 
+
+
+
     ### parametreleri hocanın verdiği parametrelerle değiştirdim.
