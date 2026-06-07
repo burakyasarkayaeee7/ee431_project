@@ -1,5 +1,26 @@
 import numpy as np
 
+
+
+### G_ASSIGNED matrisini buraya ekledik çünkü main kodu yazarken diğer modüllerinde bbu fonksiyona ihtiyaç duyduğunu fark ettim.Ve global değişken olarak tanımladım.
+
+
+### Hocanın verdiği H matrisinden türetilen G matrisi (11 x 15)
+### verify_matrices.py'de GH^T = 0 ile doğrulandı
+G_ASSIGNED = np.array([
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  1, 0, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,  1, 0, 1, 1],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,  1, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,  1, 1, 0, 1],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,  1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,  1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,  0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,  0, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,  0, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,  0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,  1, 0, 0, 1],
+])
+
 def hamming_encode(message_block, G_matrix):
     ### 1. Mesaj bloğunu G matrisi ile çarpıyoruz.
     encoded_block = np.dot(message_block, G_matrix)
@@ -44,4 +65,4 @@ if __name__ == "__main__":
     ### Sütunlar kendi arasında mod 2 toplanır -> 15 bitlik codeword elde edilir.
     ### Sistematik formda ilk 11 bit orijinal mesajın kendisidir.
 
-      ### parametreleri hocanın verdiği parametrelerle değiştirdim.
+    ### parametreleri hocanın verdiği parametrelerle değiştirdim.

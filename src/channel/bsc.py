@@ -53,7 +53,7 @@ if __name__ == "__main__":
     #    0     |  48   | 00110000
     #    9     |  57   | 00111001
     #    I     |  73   | 01001001
-    ### burada her karakterin ASCII standartındaki 8 bitlik karşılıklarını yazdık. 
+    ### burada her karakterin ASCII standartındaki 8 bitlik karşılıklarını yazdık.toplamda 96 bit
 
     bits = []
     for harf in mesaj:

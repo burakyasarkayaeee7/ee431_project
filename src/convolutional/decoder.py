@@ -4,16 +4,16 @@ import numpy as np
 def get_trellis():
     """
     =============================================================================================================
-    | r2 | r1 | r0 | m  | c1 | c2 | Current State (r2,r1,r0) | Next State (r1,r0,m) |
+    | m0 | m1 | m2 | m  | c1 | c2 | Current State (m0,m1,m2) | Next State (m1,m2,m) |
     -------------------------------------------------------------------------------------------------------------
     | 0  | 0  | 0  | 0  | 0  | 0  |          000              |         000          |
     | 0  | 0  | 0  | 1  | 1  | 1  |          000              |         001          |
     -------------------------------------------------------------------------------------------------------------
-    | 0  | 0  | 1  | 0  | 0  | 1  |          001              |         010          |
-    | 0  | 0  | 1  | 1  | 1  | 0  |          001              |         011          |
+    | 0  | 0  | 1  | 0  | 1  | 1  |          001              |         010          |
+    | 0  | 0  | 1  | 1  | 0  | 0  |          001              |         011          |
     -------------------------------------------------------------------------------------------------------------
-    | 0  | 1  | 0  | 0  | 1  | 1  |          010              |         100          |
-    | 0  | 1  | 0  | 1  | 0  | 0  |          010              |         101          |
+    | 0  | 1  | 0  | 0  | 0  | 1  |          010              |         100          |
+    | 0  | 1  | 0  | 1  | 1  | 0  |          010              |         101          |
     -------------------------------------------------------------------------------------------------------------
     | 0  | 1  | 1  | 0  | 1  | 0  |          011              |         110          |
     | 0  | 1  | 1  | 1  | 0  | 1  |          011              |         111          |
@@ -24,19 +24,19 @@ def get_trellis():
     | 1  | 0  | 1  | 0  | 0  | 0  |          101              |         010          |
     | 1  | 0  | 1  | 1  | 1  | 1  |          101              |         011          |
     -------------------------------------------------------------------------------------------------------------
-    | 1  | 1  | 0  | 0  | 0  | 0  |          110              |         100          | 
-    | 1  | 1  | 0  | 1  | 1  | 1  |          110              |         101          |
+    | 1  | 1  | 0  | 0  | 1  | 0  |          110              |         100          | 
+    | 1  | 1  | 0  | 1  | 0  | 1  |          110              |         101          |
     -------------------------------------------------------------------------------------------------------------
-    | 1  | 1  | 1  | 0  | 1  | 1  |          111              |         110          |
-    | 1  | 1  | 1  | 1  | 0  | 0  |          111              |         111          |
+    | 1  | 1  | 1  | 0  | 0  | 1  |          111              |         110          |
+    | 1  | 1  | 1  | 1  | 1  | 0  |          111              |         111          |
     =============================================================================================================
 
     1. AŞAMA: Olasılık Haritasını (Trellis) Çıkarma
-    - Current State = (r2, r1, r0)
+    - Current State = (m0, m1, m2)
     - Input = m
-    - Next State = (r1, r0, m)
-    - c1 = m ^ r1 ^ r2   (g1 = 1101)
-    - c2 = m ^ r0 ^ r1 ^ r2  (g2 = 1111)
+    - Next State = (m1, m2, m)
+    - c1 = m ^ m2 ^ m0       (g1 = 1101)
+    - c2 = m ^ m2 ^ m1 ^ m0  (g2 = 1111)
     """
 
     # Trellis bilgilerini tutacak sözlük 
@@ -49,25 +49,23 @@ def get_trellis():
         ### Her state için ayrı bir area açıyoruz
         trellis[state] = {}
 
-        r2 = (state >> 2) & 1   ### en eski bit
-        r1 = (state >> 1) & 1
-        r0 = state & 1           ### en yeni bit
-        ### r2 r1 r0 diye gidiyor. >> demek sağa kaydırma işlemi, & ise en sondaki biti al demek.
+        m0 = (state >> 2) & 1   ### en eski bit
+        m1 = (state >> 1) & 1
+        m2 = state & 1           ### en yeni bit
+        ### >> demek sağa kaydırma işlemi, & ise en sondaki biti al demek.
 
         # Sisteme gelebilecek yeni input biti:
         # m = 0 veya 1 olabilir
-
-        ### r2 r1 r0 m diye gidiyor
         for m in [0, 1]:
 
-            # c1 = m XOR r1 XOR r2  (g1 = 1101)
-            c1 = m ^ r1 ^ r2
+            # c1 = m XOR m2 XOR m0  (g1 = 1101)
+            c1 = m ^ m2 ^ m0
 
-            # c2 = m XOR r0 XOR r1 XOR r2  (g2 = 1111)
-            c2 = m ^ r0 ^ r1 ^ r2
+            # c2 = m XOR m2 XOR m1 XOR m0  (g2 = 1111)
+            c2 = m ^ m2 ^ m1 ^ m0
 
-            # NEXT STATE hesaplama işleminde m en sağa giriyor.r1 en başa r0 ortaya giriyor.
-            next_state = (r1 << 2) | (r0 << 1) | m
+            # NEXT STATE hesaplama, encoder'daki shift ile aynı: m0=m1, m1=m2, m2=m
+            next_state = (m1 << 2) | (m2 << 1) | m
 
             ### TRELLIS Tablosuna kaydetme işlemi
             trellis[state][m] = {
@@ -110,7 +108,7 @@ def viterbi_decode(received_bits):
     ### PATH METRIC BAŞLANGICI
     ### Viterbi'ye başlamadan önce hazırlık yapıyoruz.
     ### path_metrics her state'in hata sayısını tutar, başta hepsi sonsuz sadece 000 state'i 0
-    # Her state için başlangıç maliyeti sonsuz aslında sosnsuz demek bu state'e henuz hiç yol yok demek
+    # Her state için başlangıç maliyeti sonsuz aslında sonsuz demek bu state'e henuz hiç yol yok demek
     
     path_metrics = np.full(num_states, np.inf)
 
@@ -125,7 +123,7 @@ def viterbi_decode(received_bits):
     #####################################
 
     # Rate 1/2 olduğu için veri 2 bitlik gruplar halinde okunur
-    for i in range(0, len(received_bits), 2): ### listeyi ikişer ikişer admlıyoruz. 7 adım
+    for i in range(0, len(received_bits), 2): ### listeyi ikişer ikişer admlıyoruz
 
         # Kanaldan gelen iki bit
         r1 = received_bits[i]
@@ -136,9 +134,7 @@ def viterbi_decode(received_bits):
         new_path_metrics = np.full(num_states, np.inf) 
 
         # O anki adımın hafızası.her adım için ayrı ayrı hafıza tutuyoruz
-
         step_memory = {}
-
 
 
         ######################################
@@ -165,12 +161,10 @@ def viterbi_decode(received_bits):
                 expected_out = transition['output']
 
 
-
                 #####################################
                 ### BRANCH METRIC (HAMMING DISTANCE)
 
                 ### Gelen bit ile beklenen bit farklıysa 1 hata say
-                
                 hata_sayisi = (r1 != expected_out[0]) + (r2 != expected_out[1])
 
                 #####################################
@@ -178,7 +172,6 @@ def viterbi_decode(received_bits):
 
                 # Toplam hata puanı
                 new_metric = path_metrics[state] + hata_sayisi
-
 
 
                 #####################################
@@ -199,7 +192,6 @@ def viterbi_decode(received_bits):
         # Hafızaya ekle
         memory.append(step_memory)
 
-        ### en kısa yolu seçtik.nereden nereye gittiğimizi hafizada tuttuk.
 
     #####################################
     ### 3. AŞAMA: TRACEBACK
@@ -252,5 +244,4 @@ if __name__ == "__main__":
     print("Kurtarılan Mesaj:  ", kurtarilan[:len(mesaj)])
     print("Doğru mu:          ", np.array_equal(mesaj, kurtarilan[:len(mesaj)]))
 
-    ###
     ### parametreleri hocanın verdiği parametrelerle değiştirdim.

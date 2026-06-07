@@ -1,5 +1,15 @@
 import numpy as np
 
+### H_ASSIGNED matrisini buraya ekledik çünkü main kodu yazarken diğer modüllerinde bbu fonksiyona ihtiyaç duyduğunu fark ettim.Ve global değişken olarak tanımladım.
+### Hocanın verdiği H matrisi
+H_ASSIGNED = np.array([
+    [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0],
+    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1]
+])
+
+
 def hamming_decode(received_block, H_matrix):
     ### 1. Parity-Check (H) matrisinin transpozunu alıyoruz.
     ### Proje yönergesinde "Standard libraries for arrays" kullanımı serbest olduğu için,
@@ -12,7 +22,8 @@ def hamming_decode(received_block, H_matrix):
     
     ### 3. Sendrom kontrolü: Eğer sendrom [0, 0, 0, 0] ise kanalda hata olmamıştır.
     if not np.any(syndrome):
-        return received_block
+        ### sistematik formda ilk 11 bit mesaj bitleridir, sadece onları döndürüyoruz
+        return received_block[:11]
         
     ### 4. Hata Teşhisi: Sendrom, H matrisinin hangi sütununa eşit?
     ### Eşit olduğu sütunun indeksi, bize hangi bitin bozulduğunu söyler.
@@ -26,8 +37,9 @@ def hamming_decode(received_block, H_matrix):
     corrected_block = received_block.copy()
     if error_index != -1:
         corrected_block[error_index] = (corrected_block[error_index] + 1) % 2
-        
-    return corrected_block
+
+    ### sistematik formda ilk 11 bit mesaj bitleridir, sadece onları döndürüyoruz
+    return corrected_block[:11]
 
 ### --- TEST KISMI ---
 if __name__ == "__main__":
