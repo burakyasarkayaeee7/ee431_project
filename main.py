@@ -185,24 +185,24 @@ if __name__ == "__main__":
     ### mesajı bit dizisine çeviriyoruz
     message_bits = str_to_bits(MESSAGE)
 
-    ### 3 scheme, 5 BER, 3 seed = 45 deney
-    schemeler = [
+    ### 3 yontem, 5 BER, 3 seed = 45 deney
+    yontemler = [
         ("Hamming Only",  run_hamming_only),
         ("Conv Only",     run_conv_only),
         ("Concatenated",  run_concatenated),
     ]
 
     ### sonuçları yazdırıyoruz
-    print(f"{'Scheme':<18} {'BER':>6} {'Seed':>7} {'Hata_Once':>10} {'Hata_Sonra':>11} {'Perfect':>8}")
+    print(f"{'Yontem':<18} {'BER':>6} {'Seed':>7} {'Hata_Once':>10} {'Hata_Sonra':>11} {'Perfect':>8}")
     print("-" * 65)
 
-    for scheme_adi, fonksiyon in schemeler:
+    for yontem_adi, fonksiyon in yontemler:
         for ber in BERS_DEGERLERI:
             for seed in SEED_DEGERLERI:
 
                 ### her kombinasyon için deneyi çalıştırıyoruz
                 hata_once, hata_sonra, perfect = fonksiyon(message_bits, ber, seed)
 
-                print(f"{scheme_adi:<18} {ber:>6.3f} {seed:>7d} {hata_once:>10d} {hata_sonra:>11d} {str(perfect):>8}")
+                print(f"{yontem_adi:<18} {ber:>6.3f} {seed:>7d} {hata_once:>10d} {hata_sonra:>11d} {str(perfect):>8}")
 
-        print()  ### scheme'ler arası boşluk
+        print()  ### yontemler arası boşluk
