@@ -229,7 +229,7 @@ if __name__ == "__main__":
 
     import sys, os
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    from src.convolutional.encoder import conv_encode
+    from src.conv.encoder import conv_encode    
 
     # Örnek mesaj
     mesaj = np.array([1, 0, 1, 1])

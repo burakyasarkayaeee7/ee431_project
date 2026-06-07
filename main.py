@@ -6,8 +6,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from src.hamming.encoder import hamming_encode, G_ASSIGNED
 from src.hamming.decoder import hamming_decode, H_ASSIGNED  ### H_ASSIGNED de import ettik
-from src.convolutional.encoder import conv_encode
-from src.convolutional.decoder import viterbi_decode
+from src.conv.encoder import conv_encode
+from src.conv.decoder import viterbi_decode
 from src.channel.bsc import bsc_channel
 
 ####################################
@@ -42,6 +42,7 @@ def str_to_bits(s):
         for bit in format(ord(harf), '08b'):  ### ord() karakteri ASCII sayısına çeviriyor.
             bits.append(int(bit))             ### format() 8 bitlik binary string yapıyor.baştaki sıfır eksik bitlere 0 koyar. for döngüsü ise her karakteri tek tek alır.
     return np.array(bits, dtype=int)          ### append() ile stringten sayıya çeviriyoruz.ve listeye ekliyoruz.en sonda diziyi numpy dizisi yapıyoruz.
+
 
 
 
