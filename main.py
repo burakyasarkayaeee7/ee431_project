@@ -194,16 +194,18 @@ if __name__ == "__main__":
     ]
 
     ### sonuçları yazdırıyoruz
-    print(f"{'Yontem':<18} {'BER':>6} {'Seed':>7} {'Hata_Once':>10} {'Hata_Sonra':>11} {'Perfect':>8}")
-    print("-" * 65)
+    print(f"{'Yontem':<15} | {'BER':>6} | {'Seed':>10} | {'Hata_Once':>10} | {'Hata_Sonra':>11} | {'Hatasiz':>8}") ### sağa hizala değer kadar yer bırak
+    print("*" * 100)
 
     for yontem_adi, fonksiyon in yontemler:
         for ber in BERS_DEGERLERI:
             for seed in SEED_DEGERLERI:
 
                 ### her kombinasyon için deneyi çalıştırıyoruz
-                hata_once, hata_sonra, perfect = fonksiyon(message_bits, ber, seed)
+                hata_once, hata_sonra, hatasiz = fonksiyon(message_bits, ber, seed)
 
-                print(f"{yontem_adi:<18} {ber:>6.3f} {seed:>7d} {hata_once:>10d} {hata_sonra:>11d} {str(perfect):>8}")
+                print(f"{yontem_adi:<15} | {ber:>6.3f} | {seed:>10d} | {hata_once:>10d} | {hata_sonra:>11d} | {str(hatasiz):>8}")
+                
 
-        print()  ### yontemler arası boşluk
+        print("*" * 100)  ### yontemler arasına * koyduk
+        print("*" * 100)
