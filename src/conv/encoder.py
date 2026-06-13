@@ -13,7 +13,7 @@ def conv_encode(giris_mesaji):
     Input Bit: m3
 
     Çıkış formülleri:
-        x1 = m3 ^ m2 ^ m0        (g1: 1101)
+        x1 = m3 ^ m1 ^ m0        (g1: 1101)
         x2 = m3 ^ m2 ^ m1 ^ m0  (g2: 1111)
 
     Next State: m0=m1, m1=m2, m2=m3
@@ -41,7 +41,7 @@ def conv_encode(giris_mesaji):
     for m3 in giris_mesaji:
 
         ### g1 ve g2 polinomlarına göre XOR yaptık.
-        x1 = m3 ^ m2 ^ m0          ### g1 = 1101: D^3, D^2, D^0 konumları
+        x1 = m3 ^ m1 ^ m0          ### g1 = 1101: D^3, D^2, D^0 konumları
         x2 = m3 ^ m2 ^ m1 ^ m0    ### g2 = 1111: D^3, D^2, D^1, D^0 konumları
 
         ### append kullanırsak bitler kutu içinde hapis kalır ve kod hata verir.

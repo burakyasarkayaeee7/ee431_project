@@ -1,0 +1,127 @@
+import os
+import sys
+import numpy as np
+import matplotlib.pyplot as plt
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from main import str_to_bits, run_hamming_only, run_conv_only, run_concatenated
+from main import MESSAGE, SEED_DEGERLERI, BERS_DEGERLERI
+
+TOPLAM_BIT = len(str_to_bits(MESSAGE))
+TABAN_BER  = 1e-4
+
+def post_decoding_ber(hata_sonra):
+    return hata_sonra / TOPLAM_BIT
+
+def grafik_icin_duzelt(ber_degeri):
+    if ber_degeri <= 0:
+        return TABAN_BER
+    return ber_degeri
+
+def deneyleri_calistir():
+    message_bits = str_to_bits(MESSAGE)
+
+    yontemler = {
+        "Hamming Only": run_hamming_only,
+        "Conv Only":    run_conv_only,
+        "Concatenated": run_concatenated,
+    }
+
+    sonuclar = {
+        "Hamming Only": {"ortalama": [], "seedler": {12013: [], 17317: [], 24847: []}},
+        "Conv Only":    {"ortalama": [], "seedler": {12013: [], 17317: [], 24847: []}},
+        "Concatenated": {"ortalama": [], "seedler": {12013: [], 17317: [], 24847: []}},
+    }
+
+    for yontem_adi, deney in yontemler.items():
+        for ber in BERS_DEGERLERI:
+            seed_berleri = []
+            for seed in SEED_DEGERLERI:
+                _, hata_sonra, _ = deney(message_bits, ber, seed)
+                pd_ber        = post_decoding_ber(hata_sonra)
+                pd_ber_grafik = grafik_icin_duzelt(pd_ber)
+                seed_berleri.append(pd_ber)
+                sonuclar[yontem_adi]["seedler"][seed].append(pd_ber_grafik)
+            ortalama = np.mean(seed_berleri)
+            sonuclar[yontem_adi]["ortalama"].append(grafik_icin_duzelt(ortalama))
+
+    return sonuclar
+
+
+def grafik_ciz_3_subplot(sonuclar):
+    """
+    Her yöntem için ayrı subplot — 1 satır 3 sütun düzeni.
+    Her subplotta:
+      - 3 adet kesik çizgi  (bireysel seed izleri, şeffaf)
+      - 1 adet kalın çizgi  (3 seedin ortalaması, marker'lı)
+    """
+
+    yapilandirma = [
+        ("Hamming Only", "blue"),
+        ("Conv Only",    "red"),
+        ("Concatenated", "green"),
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 7), sharey=True)
+    fig.suptitle("BER Karşılaştırma Grafiği — Detaylı", fontsize=14, y=1.01)
+
+    for ax, (yontem_adi, renk) in zip(axes, yapilandirma):
+        veri = sonuclar[yontem_adi]
+
+        # Bireysel seed izleri
+        for seed in SEED_DEGERLERI:
+            ax.plot(
+                BERS_DEGERLERI,
+                veri["seedler"][seed],
+                linestyle="--",
+                color=renk,
+                alpha=0.3,
+                linewidth=1,
+                label=f"Seed {seed}",
+            )
+
+        # Ortalama çizgisi
+        ax.plot(
+            BERS_DEGERLERI,
+            veri["ortalama"],
+            linestyle="-",
+            color=renk,
+            marker="o",
+            linewidth=2.5,
+            markersize=7,
+            label="Ortalama",
+        )
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_title(yontem_adi, fontsize=12)
+        ax.set_xlabel("Kanal BER")
+        ax.grid(True, which="both", linestyle=":", alpha=0.5)
+        ax.legend(fontsize=8)
+
+    axes[0].set_ylabel("Post-Decoding BER")
+
+    plt.tight_layout()
+    plt.savefig("ber_detayli_3subplot.png", dpi=150, bbox_inches="tight")
+    print("Grafik kaydedildi: ber_detayli_3subplot.png")
+    plt.show()
+
+
+if __name__ == "__main__":
+    print("Deneyler çalıştırılıyor (45 deney)...")
+    sonuclar = deneyleri_calistir()
+    print("Tamamlandı.\n")
+
+    print("Post-Decoding BER ortalamaları:")
+    print(f"{'Yöntem':<16}", end="")
+    for ber in BERS_DEGERLERI:
+        print(f"{ber:>10}", end="")
+    print()
+    for yontem_adi, veri in sonuclar.items():
+        print(f"{yontem_adi:<16}", end="")
+        for deger in veri["ortalama"]:
+            print(f"{deger:>10.5f}", end="")
+        print()
+
+    grafik_ciz_3_subplot(sonuclar)
