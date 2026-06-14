@@ -58,7 +58,7 @@ def get_trellis():
         # m = 0 veya 1 olabilir
         for m in [0, 1]:
 
-            # c1 = m XOR m2 XOR m0  (g1 = 1101)
+            # c1 = m XOR m1 XOR m0  (g1 = 1101)
             c1 = m ^ m1 ^ m0
 
             # c2 = m XOR m2 XOR m1 XOR m0  (g2 = 1111)
