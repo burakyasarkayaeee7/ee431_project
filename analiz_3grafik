@@ -50,13 +50,6 @@ def deneyleri_calistir():
 
 
 def grafik_ciz_3_subplot(sonuclar):
-    """
-    Her yöntem için ayrı subplot — 1 satır 3 sütun düzeni.
-    Her subplotta:
-      - 3 adet kesik çizgi  (bireysel seed izleri, şeffaf)
-      - 1 adet kalın çizgi  (3 seedin ortalaması, marker'lı)
-    """
-
     yapilandirma = [
         ("Hamming Only", "blue"),
         ("Conv Only",    "red"),
@@ -64,12 +57,11 @@ def grafik_ciz_3_subplot(sonuclar):
     ]
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 7), sharey=True)
-    fig.suptitle("BER Karşılaştırma Grafiği — Detaylı", fontsize=14, y=1.01)
+    fig.suptitle("BER Karşılaştırma Grafiği — 3lü Detaylı ", fontsize=14)
 
     for ax, (yontem_adi, renk) in zip(axes, yapilandirma):
         veri = sonuclar[yontem_adi]
 
-        # Bireysel seed izleri
         for seed in SEED_DEGERLERI:
             ax.plot(
                 BERS_DEGERLERI,
@@ -81,7 +73,6 @@ def grafik_ciz_3_subplot(sonuclar):
                 label=f"Seed {seed}",
             )
 
-        # Ortalama çizgisi
         ax.plot(
             BERS_DEGERLERI,
             veri["ortalama"],
@@ -103,8 +94,6 @@ def grafik_ciz_3_subplot(sonuclar):
     axes[0].set_ylabel("Post-Decoding BER")
 
     plt.tight_layout()
-    plt.savefig("ber_detayli_3subplot.png", dpi=150, bbox_inches="tight")
-    print("Grafik kaydedildi: ber_detayli_3subplot.png")
     plt.show()
 
 

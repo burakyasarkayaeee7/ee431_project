@@ -56,8 +56,7 @@ def deneyleri_calistir():
         "Conv Only":     run_conv_only,
         "Concatenated":  run_concatenated,
     }
-
-    ### Yapıyı senin istediğin gibi daha toplu ve net şekilde tanımlıyoruz.
+    
     sonuclar = {
         "Hamming Only": {
             "ortalama": [],
@@ -110,13 +109,7 @@ def deneyleri_calistir():
 
 
 #############################################################
-### Grafik aşaması hocanın belirttiği şekilde 
-
-
-### Produce a single plot of post-decoding BER versus channel BER for the three schemes, averaged over your three seeds, with all three individual seed traces shown.
-###
-
-### Yani TEK grafikte:
+### Grafik aşaması hocanın belirttiği şekilde Yani TEK grafikte belirttimç
 
 
 def grafik_ciz(sonuclar):   ### deneyleri calistir fonksiyonundan sonuçlar dict{} geldi
@@ -175,7 +168,7 @@ if __name__ == "__main__":
     ### Sonuçları yazdırdık
 
 
-    print("\nPost-Decoding BER ortalamalari:")
+    print("\nPost-Decoding BER ortalamalari:") ### bu kısmı terminalde gösterdik.tablo halinde
     print(f"{'Yontem':<16}", end="")
     for ber in BERS_DEGERLERI:
         print(f"{ber:>10}", end="")
